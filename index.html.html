@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexão Futuro - Educação Inclusiva com Arduino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-darkest': '#032030',
+                        'brand-dark': '#022B42',
+                        'brand-mid': '#003554',
+                        'brand-primary': '#004D74',
+                        'brand-accent': '#006494',
+                        'brand-light': '#006DA4',
+                        'cyan-400': '#22d3ee',
+                        'cyan-300': '#67e8f9',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #22d3ee;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        .btn-primary {
+            background-image: linear-gradient(to right, #006DA4, #006494);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.4);
+            transform: scale(1.03) translateY(-2px);
+        }
+
+        .card {
+            background-color: rgba(2, 43, 66, 0.6); 
+            border: 1px solid rgba(0, 77, 116, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease-in-out;
+            border-radius: 1rem; /* rounded-xl */
+        }
+        .card:hover {
+            border-color: rgba(34, 211, 238, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .input-field {
+             background-color: #032030;
+             border: 1px solid #003554;
+             transition: all 0.3s ease-in-out;
+        }
+        .input-field:focus {
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+            border-color: #22d3ee !important;
+            outline: none;
+        }
+
+        .hero-title-shadow {
+            text-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+        }
+        
+        .tab-link.active {
+            color: #22d3ee; /* cyan-400 */
+        }
+        .tab-link.active svg {
+            stroke: #22d3ee;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-brand-darkest text-gray-300 pb-20 md:pb-0">
+
+    <!-- Cabeçalho Principal -->
+    <header id="main-header" class="bg-brand-darkest/70 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                Conexão Futuro
+            </a>
+            <!-- Navegação Desktop -->
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#sobre" class="text-gray-300 hover:text-cyan-400 transition-all duration-300">Sobre</a>
+                <a href="#projetos" class="text-gray-300 hover:text-cyan-400 transition-all duration-300">Projetos</a>
+                <a href="#portal-aluno" class="text-gray-300 hover:text-cyan-400 transition-all duration-300">Portal</a>
+                <a href="#parceiros" class="text-gray-300 hover:text-cyan-400 transition-all duration-300">Parceiros</a>
+                <a href="#login" class="btn-primary text-white px-4 py-2 rounded-lg font-semibold text-sm">Login / Registrar</a>
+            </div>
+            <!-- Botão de Login Mobile -->
+            <div class="md:hidden">
+                <a href="#login" class="btn-primary text-white px-3 py-2 rounded-lg text-sm font-semibold">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal (Página Inicial) -->
+    <main id="main-content">
+        <section id="inicio" class="relative bg-brand-darkest text-white pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+            <div class="absolute -top-1/2 left-1/2 -translate-x-1/2 w-[150%] h-[150%] rounded-full bg-gradient-to-br from-brand-dark/50 to-transparent -z-10"></div>
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4 hero-title-shadow">Conectando Mentes, <br><span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-light to-cyan-400">Construindo o Futuro</span></h1>
+                <p class="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-8">Promovemos educação tecnológica inclusiva, ligando empresas a alunos de escolas públicas através do universo Arduino.</p>
+                <a href="#sobre" class="btn-primary text-white px-8 py-3 rounded-full font-bold text-lg">Descubra Como</a>
+            </div>
+        </section>
+
+        <section id="sobre" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Nossa Missão</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Acreditamos no poder da tecnologia para transformar vidas, capacitando a próxima geração de inovadores.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-center">
+                    <div class="card p-8">
+                        <div class="bg-gradient-to-br from-brand-accent to-brand-light text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
+                            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Inclusão</h3>
+                        <p class="text-gray-400">Criamos oportunidades para todos, focando em alunos de escolas públicas.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="bg-gradient-to-br from-brand-accent to-brand-light text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
+                             <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M2 8c0-2.2.7-4.3 2-6"></path><path d="M22 8a10 10 0 0 0-2-6"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Inovação</h3>
+                        <p class="text-gray-400">Usamos o Arduino para despertar a criatividade e o pensamento crítico.</p>
+                    </div>
+                    <div class="card p-8">
+                        <div class="bg-gradient-to-br from-brand-accent to-brand-light text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
+                            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v15H6.5A2.5 2.5 0 0 1 4 14.5V4A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-white">Educação</h3>
+                        <p class="text-gray-400">Fornecemos kits, tutoriais e mentoria para uma aprendizagem prática e eficaz.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projetos" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Nossos Projetos</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Do material à prática, criamos um ecossistema completo de aprendizagem.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:max-w-4xl mx-auto">
+                    <div class="card overflow-hidden">
+                        <img src="10857.jpg" alt="[Imagem de um kit Arduino com vários componentes eletrónicos espalhados numa mesa]" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2 text-cyan-300">Kits Arduino para Escolas</h3>
+                            <p class="text-gray-400">Empresas parceiras doam kits de Arduino que são distribuídos em escolas públicas.</p>
+                        </div>
+                    </div>
+                    <div class="card overflow-hidden">
+                        <img src="foto-de-perto-jovem-surpreendendo-se-com-inovacao.jpg" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2 text-cyan-300">Plataforma de Tutoriais</h3>
+                            <p class="text-gray-400">Oferecemos acesso gratuito a uma vasta biblioteca de tutoriais e projetos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="portal-aluno" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                <div class="card p-8 sm:p-10 text-center">
+                     <div class="text-center mb-8">
+                         <h2 class="text-3xl md:text-4xl font-bold text-white">Portal do Aluno</h2>
+                         <p class="text-gray-400 mt-4 max-w-2xl mx-auto">A sua central de aprendizado gamificada.</p>
+                     </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                        <div class="bg-brand-dark/50 p-4 rounded-lg border border-brand-primary/50 text-center">
+                            <p class="text-sm text-gray-400">Pontos</p>
+                            <p class="text-2xl font-bold text-cyan-400">1,250 XP</p>
+                        </div>
+                         <div class="bg-brand-dark/50 p-4 rounded-lg border border-brand-primary/50 text-center">
+                            <p class="text-sm text-gray-400">Projetos</p>
+                            <p class="text-2xl font-bold text-cyan-400">5 / 12</p>
+                        </div>
+                         <div class="bg-brand-dark/50 p-4 rounded-lg border border-brand-primary/50 text-center">
+                            <p class="text-sm text-gray-400">Sequência</p>
+                            <p class="text-2xl font-bold text-cyan-400 flex items-center justify-center gap-1">7 🔥</p>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <button id="access-portal-btn" class="btn-primary text-white px-8 py-3 rounded-full font-bold text-lg">Aceder ao Portal</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ia-lab" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Laboratório de Ideias com IA</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Sem ideias? A nossa IA cria uma sugestão com base nos componentes que tem disponíveis!</p>
+                </div>
+                <div class="max-w-3xl mx-auto card p-8">
+                    <div>
+                        <label for="components" class="block text-gray-300 font-medium mb-2">Que componentes tem?</label>
+                        <input type="text" id="components" name="components" placeholder="Ex: LED, sensor de temperatura, botão" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field">
+                    </div>
+                    <div class="text-center mt-6">
+                        <button id="generate-idea-btn" class="btn-primary text-white px-8 py-3 rounded-full font-bold text-lg w-full md:w-auto flex items-center justify-center gap-2">
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            Gerar Ideia
+                        </button>
+                    </div>
+                    <div id="idea-result" class="mt-8 p-6 bg-brand-darkest/50 rounded-lg border border-brand-mid/50" style="display: none;">
+                        <h3 class="text-xl font-bold mb-2 text-cyan-300">A sua ideia de projeto:</h3>
+                        <div id="loader" class="loader mx-auto my-4" style="display: none;"></div>
+                        <p id="idea-text" class="text-gray-300 whitespace-pre-wrap"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="parceiros" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Seja um Parceiro</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Invista no futuro do nosso país. Junte-se a nós e faça parte desta mudança.</p>
+                </div>
+                
+                 <div class="text-center mt-12">
+                    <a href="#contato" class="btn-primary text-white px-8 py-3 rounded-full font-bold text-lg">Entre em Contato</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="login" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Aceda à Plataforma</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Faça login ou crie a sua conta para começar.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold text-center text-white mb-6">Portal do Aluno</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label for="student-email" class="block text-gray-300 font-medium mb-2">Email</label>
+                                <input type="email" id="student-email" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                            </div>
+                            <div>
+                                 <label for="student-password" class="block text-gray-300 font-medium mb-2">Senha</label>
+                                <input type="password" id="student-password" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                            </div>
+                           <button type="submit" class="w-full btn-primary text-white px-8 py-2.5 rounded-lg font-bold">Login</button>
+                           <button type="button" class="w-full bg-brand-primary/50 text-cyan-300 px-8 py-2.5 rounded-lg font-bold hover:bg-brand-primary/80 transition-all duration-300">Registrar</button>
+                        </form>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold text-center text-white mb-6">Portal da Empresa</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label for="company-email" class="block text-gray-300 font-medium mb-2">Email Corporativo</label>
+                                <input type="email" id="company-email" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                            </div>
+                            <div>
+                                 <label for="company-password" class="block text-gray-300 font-medium mb-2">Senha</label>
+                                <input type="password" id="company-password" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                            </div>
+                           <button type="submit" class="w-full btn-primary text-white px-8 py-2.5 rounded-lg font-bold">Login</button>
+                           <a href="#contato" class="block w-full text-center bg-brand-primary/50 text-cyan-300 px-8 py-2.5 rounded-lg font-bold hover:bg-brand-primary/80 transition-all duration-300">Tornar-se Parceiro</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contato" class="py-20 bg-transparent">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Entre em Contato</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Dúvidas? Quer ser nosso parceiro? Adoraríamos ouvir você.</p>
+                </div>
+                <div class="max-w-3xl mx-auto card p-8">
+                    <form>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-gray-300 font-medium mb-2">Nome</label>
+                                <input type="text" id="name" name="name" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                            </div>
+                             <div>
+                                <label for="email" class="block text-gray-300 font-medium mb-2">Email</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <label for="subject" class="block text-gray-300 font-medium mb-2">Assunto</label>
+                            <input type="text" id="subject" name="subject" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required>
+                        </div>
+                        <div class="mt-6">
+                            <label for="message" class="block text-gray-300 font-medium mb-2">Mensagem</label>
+                            <textarea id="message" name="message" rows="5" class="w-full px-4 py-2 placeholder-gray-500 text-white rounded-md input-field" required></textarea>
+                        </div>
+                        <div class="text-center mt-6">
+                            <button type="submit" class="btn-primary text-white px-8 py-3 rounded-full font-bold text-lg">Enviar Mensagem</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Tela do Portal do Aluno (inicialmente escondida) -->
+    <div id="portal-screen" class="hidden fixed inset-0 bg-brand-darkest z-[60] overflow-y-auto">
+        <!-- Tela de Lista de Aulas -->
+        <div id="lesson-list-screen">
+            <header class="bg-brand-darkest/70 backdrop-blur-md sticky top-0 z-50">
+                <div class="container mx-auto px-4 sm:px-6 py-4 flex items-center">
+                    <button id="back-to-main" class="text-white mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <h2 class="text-xl font-bold text-white">Aprendizagem Guiada</h2>
+                </div>
+            </header>
+            <main class="container mx-auto px-4 py-8">
+                <div class="space-y-4">
+                    <!-- Projeto 1 -->
+                    <a href="#" class="project-link flex items-center bg-brand-dark/50 p-4 rounded-xl border border-brand-primary/50 hover:bg-brand-dark transition-all duration-300" data-project="semaforo">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="25" y="10" width="50" height="80" rx="10" fill="#333"/>
+                                <circle cx="50" cy="30" r="10" fill="#FF5252"/>
+                                <circle cx="50" cy="50" r="10" fill="#FFC107"/>
+                                <circle cx="50" cy="70" r="10" fill="#4CAF50"/>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-white text-lg">Projeto Semáforo</h3>
+                            <p class="text-gray-400 text-sm">Aprenda a controlar LEDs e tempos para simular um semáforo real.</p>
+                        </div>
+                        <span class="bg-green-500/20 text-green-300 text-xs font-semibold px-3 py-1 rounded-full">Iniciante</span>
+                    </a>
+                    <!-- Projeto 2 -->
+                    <a href="#" class="project-link flex items-center bg-brand-dark/50 p-4 rounded-xl border border-brand-primary/50 hover:bg-brand-dark transition-all duration-300" data-project="estacao">
+                        <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V2l-2.5 2.5"/><path d="M12 22v-2"/><path d="M20 12h2"/><path d="M6 12H4"/><path d="m18.36 18.36.7.7"/><path d="m5.64 5.64.7.7"/><path d="m18.36 5.64-.7.7"/><path d="m5.64 18.36-.7.7"/><path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-white text-lg">Estação Meteorológica</h3>
+                            <p class="text-gray-400 text-sm">Utilize sensores para medir temperatura e humidade do ambiente.</p>
+                        </div>
+                        <span class="bg-yellow-500/20 text-yellow-300 text-xs font-semibold px-3 py-1 rounded-full">Intermédio</span>
+                    </a>
+                    <!-- Projeto 3 -->
+                    <a href="#" class="project-link flex items-center bg-brand-dark/50 p-4 rounded-xl border border-brand-primary/50 hover:bg-brand-dark transition-all duration-300" data-project="robot">
+                         <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16.5 8 18l-6-6 6-6 2 1.5"/><path d="m14 7.5 2-1.5 6 6-6 6-2-1.5"/><path d="M12 8V6H8v2Z"/><path d="M16 18v-2h-4v2Z"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-white text-lg">Robot Desvia de Obstáculos</h3>
+                            <p class="text-gray-400 text-sm">Construa um robot que navega de forma autónoma usando sensores.</p>
+                        </div>
+                        <span class="bg-red-500/20 text-red-300 text-xs font-semibold px-3 py-1 rounded-full">Avançado</span>
+                    </a>
+                    <!-- Projeto 4 -->
+                    <a href="#" class="project-link flex items-center bg-brand-dark/50 p-4 rounded-xl border border-brand-primary/50 hover:bg-brand-dark transition-all duration-300" data-project="estacionamento">
+                         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.27 4.27a14.07 14.07 0 0 0-1.24 3.39"/><path d="M21 8.66A14.07 14.07 0 0 0 16.34 4"/><path d="M2.22 12.33a14.07 14.07 0 0 0 1.25 3.38"/><path d="M19.78 12.33a14.07 14.07 0 0 0-1.25 3.38"/><path d="M5.51 19.73a14.07 14.07 0 0 0 3.39 1.24"/><path d="M17.66 21a14.07 14.07 0 0 0 3.39-1.24"/><path d="M12.33 2.22a14.07 14.07 0 0 0-3.38 1.25"/><path d="M12.33 19.78a14.07 14.07 0 0 0-3.38-1.25"/><circle cx="12" cy="12" r="2"/><path d="M12 16v-4"/><path d="M12 8V4"/></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-white text-lg">Sensor de Estacionamento</h3>
+                            <p class="text-gray-400 text-sm">Crie um alerta sonoro que indica a proximidade de objetos.</p>
+                        </div>
+                        <span class="bg-blue-500/20 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">Intermédio</span>
+                    </a>
+                </div>
+            </main>
+        </div>
+
+        <!-- Tela de Detalhe da Aula (Template) -->
+        <div id="lesson-detail-screen" class="hidden">
+            <header class="bg-brand-darkest/70 backdrop-blur-md sticky top-0 z-50">
+                <div class="container mx-auto px-4 sm:px-6 py-4 flex items-center">
+                    <button class="back-to-lessons text-white mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <h2 id="lesson-title" class="text-xl font-bold text-white"></h2>
+                </div>
+            </header>
+            <main class="container mx-auto px-4 py-8">
+                <!-- Barra de Progresso -->
+                <div class="mb-8">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-base font-medium text-cyan-300">Progresso</span>
+                        <span id="progress-text" class="text-sm font-medium text-cyan-300">0%</span>
+                    </div>
+                    <div class="w-full bg-brand-primary/30 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-cyan-400 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Requisitos -->
+                <div class="card p-6 mb-8">
+                    <h3 class="text-lg font-bold text-white mb-4">Requisitos do Projeto</h3>
+                    <ul id="requirements-list" class="space-y-3">
+                        <!-- Requisitos serão inseridos aqui pelo JS -->
+                    </ul>
+                </div>
+
+                <!-- Passo a Passo -->
+                <div class="space-y-4" id="accordion-container">
+                    <!-- Passo 1: Montagem -->
+                    <div class="accordion-item card overflow-hidden">
+                        <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                            <span class="font-bold text-white">Passo 1: Montagem do Circuito</span>
+                            <svg class="w-6 h-6 text-cyan-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-4 pb-4">
+                            <p id="montagem-text" class="text-gray-400 mb-4"></p>
+                            <img id="circuit-image" src="" alt="Esquema do circuito" class="rounded-lg">
+                        </div>
+                    </div>
+                    <!-- Passo 2: Código -->
+                     <div class="accordion-item card overflow-hidden">
+                        <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                            <span class="font-bold text-white">Passo 2: Escrevendo o Código</span>
+                             <svg class="w-6 h-6 text-cyan-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-4 pb-4">
+                            <p class="text-gray-400 mb-4">Agora, vamos programar o Arduino. Copie e cole o código abaixo na sua IDE Arduino.</p>
+                            <div class="bg-brand-darkest rounded-lg p-4 relative">
+                                <button class="copy-code-btn absolute top-2 right-2 bg-brand-primary/50 p-1.5 rounded-md hover:bg-brand-primary">
+                                    <svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </button>
+                                <pre><code id="code-block" class="language-cpp text-sm text-gray-300 block whitespace-pre-wrap"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Passo 3: Teste -->
+                    <div class="accordion-item card overflow-hidden">
+                        <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                            <span class="font-bold text-white">Passo 3: Upload e Teste</span>
+                             <svg class="w-6 h-6 text-cyan-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-4 pb-4">
+                            <p class="text-gray-400">Conecte a placa Arduino ao seu computador com o cabo USB. Na IDE, selecione a sua placa e a porta correta. Clique no botão "Upload" (seta para a direita). Se tudo estiver correto, o seu projeto começará a funcionar!</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer id="main-footer" class="bg-transparent border-t border-brand-mid/30 mt-10">
+        <div class="container mx-auto px-4 py-10 text-center md:text-left">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-1">
+                    <h3 class="text-xl font-bold mb-4 text-cyan-300">Conexão Futuro</h3>
+                    <p class="text-gray-400">Promovendo educação tecnológica inclusiva para a próxima geração de inovadores.</p>
+                </div>
+                <div class="md:col-span-1">
+                    <h3 class="text-xl font-bold mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#sobre" class="text-gray-400 hover:text-white transition">Sobre Nós</a></li>
+                        <li><a href="#projetos" class="text-gray-400 hover:text-white transition">Projetos</a></li>
+                        <li><a href="#portal-aluno" class="text-gray-400 hover:text-white transition">Portal do Aluno</a></li>
+                        <li><a href="#parceiros" class="text-gray-400 hover:text-white transition">Parceiros</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Tab Bar (Mobile Only) -->
+    <nav id="tab-bar" class="md:hidden fixed bottom-0 left-0 right-0 bg-brand-darkest/80 backdrop-blur-md border-t border-brand-mid/30 z-50 h-16">
+        <ul class="flex justify-around items-center h-full">
+            <li>
+                <a href="#sobre" class="tab-link flex flex-col items-center justify-center text-gray-400 transition-colors p-2">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-xs">Sobre</span>
+                </a>
+            </li>
+            <li>
+                <a href="#projetos" class="tab-link flex flex-col items-center justify-center text-gray-400 transition-colors p-2">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-xs">Projetos</span>
+                </a>
+            </li>
+            <li>
+                <a href="#portal-aluno" class="tab-link flex flex-col items-center justify-center text-gray-400 transition-colors p-2">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span class="text-xs">Portal</span>
+                </a>
+            </li>
+            <li>
+                <a href="#parceiros" class="tab-link flex flex-col items-center justify-center text-gray-400 transition-colors p-2">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <span class="text-xs">Parceiros</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Base de Dados dos Projetos ---
+            const projectData = {
+                'semaforo': {
+                    title: 'Projeto Semáforo',
+                    requirements: [
+                        '1x Placa Arduino Uno',
+                        '1x LED Vermelho',
+                        '1x LED Amarelo',
+                        '1x LED Verde',
+                        '3x Resistores 220Ω',
+                        'Fios Jumper e Protoboard'
+                    ],
+                    montagemText: 'Conecte os componentes na protoboard. Ligue o ânodo (perna maior) de cada LED a um resistor, e o outro lado do resistor a um pino digital do Arduino (Vermelho: 13, Amarelo: 12, Verde: 11). Conecte todos os cátodos (perna menor) ao pino GND.',
+                    imageUrl: 'circuito-1.png',
+                    code: `int ledVermelho = 13;
+int ledAmarelo = 12;
+int ledVerde = 11;
+
+void setup() {
+  pinMode(ledVermelho, OUTPUT);
+  pinMode(ledAmarelo, OUTPUT);
+  pinMode(ledVerde, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(ledVerde, HIGH);
+  delay(5000); 
+  digitalWrite(ledVerde, LOW);
+  
+  digitalWrite(ledAmarelo, HIGH);
+  delay(2000);
+  digitalWrite(ledAmarelo, LOW);
+  
+  digitalWrite(ledVermelho, HIGH);
+  delay(5000);
+  digitalWrite(ledVermelho, LOW);
+}`
+                },
+                'estacao': {
+                    title: 'Estação Meteorológica',
+                    requirements: [
+                        '1x Placa Arduino Uno',
+                        '1x Sensor de Temperatura e Humidade (DHT11)',
+                        '1x Resistor 10kΩ',
+                        'Fios Jumper e Protoboard'
+                    ],
+                    montagemText: 'Conecte o pino VCC do DHT11 ao 5V do Arduino. Conecte o pino GND ao GND. Conecte o pino de DADOS ao pino digital 2. Coloque um resistor de 10kΩ entre o pino de DADOS e o pino VCC.',
+                    imageUrl: 'circuito-2.png',
+                    code: `#include "DHT.h"
+
+#define DHTPIN 2
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+}
+
+void loop() {
+  delay(2000); // Espera 2 segundos entre as medições
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Falha ao ler do sensor DHT!");
+    return;
+  }
+
+  Serial.print("Humidade: ");
+  Serial.print(h);
+  Serial.print("%\t");
+  Serial.print("Temperatura: ");
+  Serial.print(t);
+  Serial.println(" *C");
+}`
+                },
+                'robot': {
+                    title: 'Robot Desvia de Obstáculos',
+                    requirements: [
+                        '1x Placa Arduino Uno',
+                        '1x Chassi de Robot com 2 motores DC',
+                        '1x Driver de Motor L298N',
+                        '1x Sensor Ultrassônico HC-SR04',
+                        '1x Bateria 9V ou Power Bank',
+                        'Fios Jumper'
+                    ],
+                    montagemText: 'Monte o chassi. Conecte os motores ao driver L298N. Conecte os pinos de controle do driver (IN1, IN2, IN3, IN4) aos pinos digitais do Arduino (ex: 7, 6, 5, 4). Alimente o driver com a bateria. Conecte o pino Trig do sensor ao pino 9 e o Echo ao pino 10.',
+                    imageUrl: 'circuito-3.png',
+                    code: `// Pinos do Driver L298N
+#define ENA 5
+#define IN1 7
+#define IN2 8
+#define IN3 9
+#define IN4 11
+#define ENB 6
+
+// Pinos do Sensor Ultrassônico
+#define TRIG_PIN 12
+#define ECHO_PIN 13
+
+void setup() {
+  pinMode(ENA, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  long duration, distance;
+  
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = (duration / 2) / 29.1;
+  
+  if (distance < 20) { // Se houver um obstáculo a menos de 20cm
+    parar();
+    delay(500);
+    re();
+    delay(1000);
+    esquerda();
+    delay(1000);
+  } else {
+    frente();
+  }
+}
+
+void frente() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+}
+
+void parar() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
+
+void re() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+    analogWrite(ENA, 150);
+    analogWrite(ENB, 150);
+}
+
+void esquerda() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+    analogWrite(ENA, 180);
+    analogWrite(ENB, 180);
+}`
+                },
+                'estacionamento': {
+                    title: 'Sensor de Estacionamento',
+                    requirements: [
+                        '1x Placa Arduino Uno',
+                        '1x Sensor Ultrassônico HC-SR04',
+                        '1x Buzzer',
+                        'Fios Jumper e Protoboard'
+                    ],
+                    montagemText: 'Conecte o pino VCC do sensor ao 5V e o GND ao GND. Conecte o pino Trig ao pino digital 9 e o Echo ao pino 10. Conecte o pino positivo do buzzer ao pino 8 e o negativo ao GND.',
+                    imageUrl: 'circuito-4.png',
+                    code: `#define BUZZER_PIN 8
+#define TRIG_PIN 9
+#define ECHO_PIN 10
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+}
+
+void loop() {
+  long duration, distance;
+  
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = duration * 0.034 / 2; // Calcula a distância em cm
+
+  Serial.print("Distancia: ");
+  Serial.println(distance);
+
+  if (distance < 30 && distance > 0) {
+    int beepDelay = map(distance, 0, 30, 50, 500);
+    tone(BUZZER_PIN, 1000); // Emite um som de 1000Hz
+    delay(100);
+    noTone(BUZZER_PIN);
+    delay(beepDelay);
+  } else {
+    noTone(BUZZER_PIN);
+  }
+}`
+                }
+            };
+
+            // --- Script para o Laboratório de Ideias com IA ---
+            const generateBtn = document.getElementById('generate-idea-btn');
+            if (generateBtn) {
+                const componentsInput = document.getElementById('components');
+                const ideaResultDiv = document.getElementById('idea-result');
+                const ideaTextP = document.getElementById('idea-text');
+                const loader = document.getElementById('loader');
+
+                generateBtn.addEventListener('click', async () => {
+                    const components = componentsInput.value.trim();
+                    if (!components) {
+                        ideaResultDiv.style.display = 'block';
+                        ideaTextP.textContent = 'Por favor, insira pelo menos um componente para gerar uma ideia.';
+                        return;
+                    }
+
+                    ideaResultDiv.style.display = 'block';
+                    ideaTextP.style.display = 'none';
+                    loader.style.display = 'block';
+
+                    const userQuery = `Gere uma ideia de projeto Arduino para um iniciante usando os seguintes componentes: ${components}. A resposta deve ter um título para o projeto, uma breve descrição, a lista de materiais necessários (baseada na lista fornecida) e um resumo simples dos passos para a montagem e programação. Formate a resposta de forma clara.`;
+                    const apiKey = ""; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=AIzaSyCuzVlqP3APZU1wpHQhjuFtBnJd1AoRELo`;
+
+                    const payload = { contents: [{ parts: [{ text: userQuery }] }] };
+                    
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        const result = await response.json();
+                        const candidate = result.candidates?.[0];
+                        if (candidate && candidate.content?.parts?.[0]?.text) {
+                            ideaTextP.textContent = candidate.content.parts[0].text;
+                        } else {
+                            throw new Error('Resposta da API inválida ou sem conteúdo.');
+                        }
+                    } catch (error) {
+                        console.error('Erro ao chamar a API Gemini:', error);
+                        ideaTextP.textContent = 'Ocorreu um erro ao gerar a ideia. Tente novamente mais tarde.';
+                    } finally {
+                        loader.style.display = 'none';
+                        ideaTextP.style.display = 'block';
+                    }
+                });
+            }
+            
+            // --- Scripts de Navegação (Página Principal vs. Portal e Aulas) ---
+            const mainContent = document.getElementById('main-content');
+            const portalScreen = document.getElementById('portal-screen');
+            const lessonListScreen = document.getElementById('lesson-list-screen');
+            const lessonDetailScreen = document.getElementById('lesson-detail-screen');
+            const accessPortalBtn = document.getElementById('access-portal-btn');
+            const backToMainBtn = document.getElementById('back-to-main');
+            const backToLessonsBtns = document.querySelectorAll('.back-to-lessons');
+            const projectLinks = document.querySelectorAll('.project-link');
+            const mainHeader = document.getElementById('main-header');
+            const mainFooter = document.getElementById('main-footer');
+            const tabBar = document.getElementById('tab-bar');
+
+            const lessonTitleEl = document.getElementById('lesson-title');
+            const requirementsListEl = document.getElementById('requirements-list');
+            const circuitImageEl = document.getElementById('circuit-image');
+            const codeBlockEl = document.getElementById('code-block');
+            const montagemTextEl = document.getElementById('montagem-text');
+
+            const showScreen = (screenToShow) => {
+                mainContent.classList.add('hidden');
+                portalScreen.classList.add('hidden');
+                lessonListScreen.classList.add('hidden');
+                lessonDetailScreen.classList.add('hidden');
+                mainHeader.classList.add('hidden');
+                mainFooter.classList.add('hidden');
+                if (tabBar) tabBar.classList.add('hidden');
+                
+                screenToShow.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            };
+            
+            function showMainScreen() {
+                portalScreen.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                mainHeader.classList.remove('hidden');
+                mainFooter.classList.remove('hidden');
+                if (tabBar) tabBar.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+
+            accessPortalBtn.addEventListener('click', () => {
+                showScreen(portalScreen);
+                lessonListScreen.classList.remove('hidden');
+            });
+            
+            backToMainBtn.addEventListener('click', showMainScreen);
+            
+            backToLessonsBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    lessonDetailScreen.classList.add('hidden');
+                    lessonListScreen.classList.remove('hidden');
+                });
+            });
+
+            projectLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const projectKey = link.dataset.project;
+                    const data = projectData[projectKey];
+
+                    if (data) {
+                        // Popula a tela de detalhes com os dados do projeto
+                        lessonTitleEl.textContent = data.title;
+                        montagemTextEl.textContent = data.montagemText;
+                        
+                        // Limpa e popula a lista de requisitos
+                        requirementsListEl.innerHTML = '';
+                        data.requirements.forEach((req, index) => {
+                            const li = document.createElement('li');
+                            li.className = 'flex items-center';
+                            li.innerHTML = `
+                                <input id="req${index}" type="checkbox" class="h-4 w-4 rounded bg-brand-dark border-brand-primary text-cyan-400 focus:ring-cyan-400">
+                                <label for="req${index}" class="ml-3 text-gray-300">${req}</label>
+                            `;
+                            requirementsListEl.appendChild(li);
+                        });
+
+                        circuitImageEl.src = data.imageUrl;
+                        circuitImageEl.alt = `Esquema do circuito do ${data.title}`;
+                        codeBlockEl.textContent = data.code;
+
+                        // Mostra a tela
+                        lessonListScreen.classList.add('hidden');
+                        lessonDetailScreen.classList.remove('hidden');
+                        resetProgressBar();
+                        resetAccordions();
+                    }
+                });
+            });
+
+            // --- Lógica Interativa da Aula ---
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+
+            const updateProgressBar = () => {
+                const openItems = document.querySelectorAll('#accordion-container .accordion-item.open').length;
+                const totalItems = accordionItems.length;
+                const percentage = totalItems > 0 ? (openItems / totalItems) * 100 : 0;
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `${Math.round(percentage)}%`;
+            };
+            
+            const resetProgressBar = () => {
+                progressBar.style.width = '0%';
+                progressText.textContent = '0%';
+            }
+
+            const resetAccordions = () => {
+                 accordionItems.forEach(item => {
+                    item.classList.remove('open');
+                    item.querySelector('.accordion-content').style.maxHeight = null;
+                    item.querySelector('svg').style.transform = 'rotate(0deg)';
+                });
+            }
+            
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = header.querySelector('svg');
+
+                header.addEventListener('click', () => {
+                    const isOpen = item.classList.contains('open');
+                    
+                    if (isOpen) {
+                        item.classList.remove('open');
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        item.classList.add('open');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                    updateProgressBar();
+                });
+            });
+            
+            document.querySelectorAll('.copy-code-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const code = button.nextElementSibling.querySelector('code').innerText;
+                    
+                    const textArea = document.createElement('textarea');
+                    textArea.value = code;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        button.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    } catch (err) {
+                        console.error('Fallback: Oops, unable to copy', err);
+                    }
+                    document.body.removeChild(textArea);
+
+                    setTimeout(() => {
+                        button.innerHTML = '<svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                    }, 2000);
+                });
+            });
+
+            // --- Script para Navegação Mobile com Tab Bar ---
+            const sections = document.querySelectorAll('#main-content > section[id]');
+            const tabLinks = document.querySelectorAll('.tab-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        tabLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if(portalScreen.classList.contains('hidden')) {
+                        // Se estivermos na página principal, scroll suave
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        // Se estivermos no portal, voltar para a principal e depois scroll
+                        showMainScreen();
+                        setTimeout(() => {
+                           targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
